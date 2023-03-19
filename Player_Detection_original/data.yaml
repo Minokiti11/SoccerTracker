@@ -1,0 +1,7 @@
+train: ../soccer_tracker/Player_Detection_original/train/images
+val: ../soccer_tracker/Player_Detection_original/valid/images
+test: ../soccer_tracker/Player_Detection_original/test/images
+
+nc: 4
+names: ['ball', 'goalkeeper', 'player', 'refree']
+
