@@ -6,6 +6,8 @@ by using camera intrinsic and extrinsic matrices
 import numpy as np
 import cv2
 
+import sys
+sys.path.append('/Users/sugimuraminori/local_soccer_tracker/pitch_tracker_package')
 from pitch_tracker.key_points import (
     back_middle_line_world,
     front_middle_line_world,

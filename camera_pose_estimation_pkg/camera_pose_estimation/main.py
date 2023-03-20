@@ -24,6 +24,8 @@ from camera_pose_estimation.projector import (
     project_to_screen,
 )
 
+import sys
+sys.path.append('/Users/sugimuraminori/local_soccer_tracker/pitch_tracker_package')
 from pitch_tracker.common import intersect
 from pitch_tracker.key_points import (
     corner_front_right_world,
