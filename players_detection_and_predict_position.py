@@ -252,9 +252,9 @@ guess_trans = trans if to_device_from_world is not None else (0, 0, 80)
 guess_fx = K[0, 0]
 
 # Display result
-cv2.imshow("field", field)
-cv2.imshow("img", img)
-k = cv2.waitKey(0)
+# cv2.imshow("field", field)
+# cv2.imshow("img", img)
+# k = cv2.waitKey(0)
 
 # out_path = Path("out")
 # print(f"Writing image to {str(out_path)}")
@@ -276,7 +276,7 @@ from tqdm import tqdm
 from dataclasses import dataclass
 from datetime import datetime as dt
 
-SOURCE_VIDEO_PATH = f"{HOME}/local_soccer_tracker/video/08fd33_0.mp4"
+SOURCE_VIDEO_PATH = f"{HOME}/local_soccer_tracker/video/Arsenal_Goal.mp4"
 
 tdatetime = dt.now()
 tstr = tdatetime.strftime('%Y:%m:%d_%H:%M:%S')
@@ -344,35 +344,35 @@ for frame in tqdm(frame_iterator, total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     img_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     img_height = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 
-    # 物体検出結果を出力するためのtxtファイルを作成
-    with open('detect_labels/detection_Result.txt', 'w') as f:
+    data = []
 
-        for i in range(len(objects)):
-            if (objects.name[i] != "refree"):
-                name = objects.name[i]
-                # 検出されたオブジェクトのバウンディングボックスの座標
-                xmin = objects.xmin[i]
-                ymin = objects.ymin[i]
-                width = objects.xmax[i] - objects.xmin[i]
-                height = objects.ymax[i] - objects.ymin[i]
+    for i in range(len(objects)):
+        if (objects.name[i] != "refree"):
+            name = objects.name[i]
+            # 検出されたオブジェクトのバウンディングボックスの座標
+            xmin = objects.xmin[i]
+            ymin = objects.ymin[i]
+            width = objects.xmax[i] - objects.xmin[i]
+            height = objects.ymax[i] - objects.ymin[i]
 
-                # 中心点の座標を正規化
-                norm_x = ((objects.xmax[i] + objects.xmin[i]) / 2) / img_width
-                norm_y = ((objects.ymax[i] + objects.ymin[i]) / 2) / img_height
-                
-                # 幅、高さを正規化
-                normalized_width = width / img_width
-                normalized_height = height / img_height
+            # 中心点の座標を正規化
+            norm_x = ((objects.xmax[i] + objects.xmin[i]) / 2) / img_width
+            norm_y = ((objects.ymax[i] + objects.ymin[i]) / 2) / img_height
+            
+            # 幅、高さを正規化
+            normalized_width = width / img_width
+            normalized_height = height / img_height
 
-                # print(f"{class_id}, 座標x:{xmin}, 座標y:{ymin}, 幅:{width}, 高さ:{height}")
-                # csvファイルにバウンディングBOX情報を出力
-                if objects.name[i] == "ball":
-                    id = 0
-                elif objects.name[i] == "goalkeeper":
-                    id = 1
-                else:
-                    id = 2
-                print(f"{id} {norm_x} {norm_y} {normalized_width} {normalized_height}", file=f)
+            # print(f"{class_id}, 座標x:{xmin}, 座標y:{ymin}, 幅:{width}, 高さ:{height}")
+            # csvファイルにバウンディングBOX情報を出力
+            if objects.name[i] == "ball":
+                id = 0
+            elif objects.name[i] == "goalkeeper":
+                id = 1
+            else:
+                id = 2
+            
+            data.append([id, norm_x, norm_y, normalized_width, normalized_height])
 
     field = cv2.imread("soccer_field.png")
     field_copy = field.copy()
@@ -392,26 +392,19 @@ for frame in tqdm(frame_iterator, total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         img, guess_fx, guess_rot, guess_trans
     )
 
-
-    # Load yolov5 inference results
-    filename = Path(filename)
-    yolo_file = Path("detect_labels/detection_Result.txt")
-
-    data = np.loadtxt(yolo_file, encoding = "UTF-8")
-
     # players_pos = []
-    for k in range(data.shape[0]):
+    for k in range(len(data)):
         # Skip ball with class id 0 & Skip referee with class id 3
-        if data[k, 0] == 0 or data[k, 0] == 3:
+        if data[k][0] == 0 or data[k][0] == 3:
             continue
 
         # Skip detections with ridiculous values
-        # if data[k, 3] < 0.01:
+        # if data[k][3] < 0.01:
         #     continue
 
         # Transform yolo bounding box to opencv convention
         pt1, pt2 = yolobbox2bbox(
-            data[k, 1], data[k, 2], data[k, 3], data[k, 4], img_width, img_height
+            data[k][1], data[k][2], data[k][3], data[k][4], img_width, img_height
         )
         # Make a sub image and find shirt color
         sub_img = img[pt1[1] : pt2[1], pt1[0] : pt2[0]]
