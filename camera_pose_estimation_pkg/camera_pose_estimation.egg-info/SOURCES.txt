@@ -1,0 +1,7 @@
+README.md
+setup.py
+camera_pose_estimation.egg-info/PKG-INFO
+camera_pose_estimation.egg-info/SOURCES.txt
+camera_pose_estimation.egg-info/dependency_links.txt
+camera_pose_estimation.egg-info/requires.txt
+camera_pose_estimation.egg-info/top_level.txt

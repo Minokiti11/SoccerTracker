@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./camera_pose_estimation_package"
+    ]
+}
